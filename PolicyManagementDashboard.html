@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة سياسات المنظمة</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 15px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            font-size: 1em;
+            font-weight: 500;
+        }
+
+        .nav-tab:hover {
+            background: #e9ecef;
+        }
+
+        .nav-tab.active {
+            background: #007bff;
+            color: white;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .policy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .policy-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .policy-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .policy-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .policy-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .policy-type {
+            background: #007bff;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+        }
+
+        .policy-description {
+            color: #6c757d;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .policy-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+
+        .policy-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .add-policy-btn {
+            background: #28a745;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s ease;
+        }
+
+        .add-policy-btn:hover {
+            background: #1e7e34;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            color: #aaa;
+            float: left;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .form-textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        @media (max-width: 768px) {
+            .nav-tabs {
+                flex-direction: column;
+            }
+            
+            .policy-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>نظام إدارة سياسات المنظمة</h1>
+            <p>إدارة وتنظيم السياسات المختلفة في المؤسسة</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('overview')">نظرة عامة</button>
+            <button class="nav-tab" onclick="showSection('leave')">سياسات الإجازات</button>
+            <button class="nav-tab" onclick="showSection('employment')">سياسات التوظيف</button>
+            <button class="nav-tab" onclick="showSection('salary')">سياسات الرواتب</button>
+            <button class="nav-tab" onclick="showSection('performance')">سياسات الأداء</button>
+            <button class="nav-tab" onclick="showSection('discipline')">سياسات الانضباط</button>
+        </div>
+
+        <div class="content">
+            <!-- نظرة عامة -->
+            <div id="overview" class="section active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalPolicies">0</div>
+                        <div class="stat-label">إجمالي السياسات</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="activePolicies">0</div>
+                        <div class="stat-label">السياسات النشطة</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="leavePolicies">0</div>
+                        <div class="stat-label">سياسات الإجازات</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="employmentPolicies">0</div>
+                        <div class="stat-label">سياسات التوظيف</div>
+                    </div>
+                </div>
+
+                <div class="search-bar">
+                    <input type="text" class="search-input" placeholder="البحث في السياسات..." id="searchInput">
+                    <button class="add-policy-btn" onclick="showAddPolicyModal()">إضافة سياسة جديدة</button>
+                </div>
+
+                <div class="policy-grid" id="allPoliciesGrid">
+                    <!-- السياسات ستظهر هنا -->
+                </div>
+            </div>
+
+            <!-- سياسات الإجازات -->
+            <div id="leave" class="section">
+                <h2>سياسات الإجازات</h2>
+                <div class="policy-grid" id="leavePoliciesGrid">
+                    <!-- سياسات الإجازات ستظهر هنا -->
+                </div>
+            </div>
+
+            <!-- سياسات التوظيف -->
+            <div id="employment" class="section">
+                <h2>سياسات التوظيف</h2>
+                <div class="policy-grid" id="employmentPoliciesGrid">
+                    <!-- سياسات التوظيف ستظهر هنا -->
+                </div>
+            </div>
+
+            <!-- سياسات الرواتب -->
+            <div id="salary" class="section">
+                <h2>سياسات الرواتب</h2>
+                <div class="policy-grid" id="salaryPoliciesGrid">
+                    <!-- سياسات الرواتب ستظهر هنا -->
+                </div>
+            </div>
+
+            <!-- سياسات الأداء -->
+            <div id="performance" class="section">
+                <h2>سياسات الأداء</h2>
+                <div class="policy-grid" id="performancePoliciesGrid">
+                    <!-- سياسات الأداء ستظهر هنا -->
+                </div>
+            </div>
+
+            <!-- سياسات الانضباط -->
+            <div id="discipline" class="section">
+                <h2>سياسات الانضباط</h2>
+                <div class="policy-grid" id="disciplinePoliciesGrid">
+                    <!-- سياسات الانضباط ستظهر هنا -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal لإضافة سياسة جديدة -->
+    <div id="addPolicyModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>إضافة سياسة جديدة</h2>
+            <form id="addPolicyForm">
+                <div class="form-group">
+                    <label class="form-label">عنوان السياسة</label>
+                    <input type="text" class="form-input" id="policyTitle" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">وصف السياسة</label>
+                    <textarea class="form-textarea" id="policyDescription" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">نوع السياسة</label>
+                    <select class="form-select" id="policyType" required>
+                        <option value="">اختر نوع السياسة</option>
+                        <option value="LEAVE">سياسات الإجازات</option>
+                        <option value="EMPLOYMENT">سياسات التوظيف</option>
+                        <option value="SALARY">سياسات الرواتب</option>
+                        <option value="PERFORMANCE">سياسات الأداء</option>
+                        <option value="DISCIPLINE">سياسات الانضباط</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">محتوى السياسة</label>
+                    <textarea class="form-textarea" id="policyContent" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">تاريخ بدء السريان</label>
+                    <input type="datetime-local" class="form-input" id="effectiveDate" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">تاريخ انتهاء الصلاحية (اختياري)</label>
+                    <input type="datetime-local" class="form-input" id="expiryDate">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">أنشأ بواسطة</label>
+                    <input type="text" class="form-input" id="createdBy" required>
+                </div>
+                <div class="policy-actions">
+                    <button type="submit" class="btn btn-primary">حفظ السياسة</button>
+                    <button type="button" class="btn btn-danger" onclick="closeModal()">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // بيانات تجريبية للسياسات
+        const samplePolicies = [
+            {
+                id: 1,
+                title: "سياسة الإجازات السنوية",
+                description: "سياسة تحكم الإجازات السنوية للموظفين",
+                policyType: "LEAVE",
+                content: "1. يحق لكل موظف إجازة سنوية مدفوعة الأجر لمدة 21 يوم عمل.\n2. يجب تقديم طلب الإجازة قبل أسبوعين على الأقل.\n3. لا يمكن أخذ أكثر من 10 أيام إجازة متتالية.",
+                version: 1,
+                isActive: true,
+                effectiveDate: "2024-01-01T00:00:00",
+                createdDate: "2024-01-01T00:00:00",
+                createdBy: "admin"
+            },
+            {
+                id: 2,
+                title: "سياسة التوظيف",
+                description: "سياسة توظيف الموظفين الجدد",
+                policyType: "EMPLOYMENT",
+                content: "1. يجب أن يكون المتقدم حاصلاً على المؤهل العلمي المطلوب.\n2. يتم إجراء مقابلة شخصية مع المتقدمين المؤهلين.\n3. يتم التحقق من المراجع السابقة.",
+                version: 1,
+                isActive: true,
+                effectiveDate: "2024-01-01T00:00:00",
+                createdDate: "2024-01-01T00:00:00",
+                createdBy: "admin"
+            },
+            {
+                id: 3,
+                title: "سياسة الرواتب والمكافآت",
+                description: "سياسة تحديد الرواتب والمكافآت",
+                policyType: "SALARY",
+                content: "1. يتم تحديد الراتب الأساسي حسب المؤهل والخبرة.\n2. يتم صرف الراتب في آخر يوم عمل من الشهر.\n3. يحق للموظف الحصول على بدل سكن وبدل نقل.",
+                version: 1,
+                isActive: true,
+                effectiveDate: "2024-01-01T00:00:00",
+                createdDate: "2024-01-01T00:00:00",
+                createdBy: "admin"
+            },
+            {
+                id: 4,
+                title: "سياسة تقييم الأداء",
+                description: "سياسة تقييم أداء الموظفين",
+                policyType: "PERFORMANCE",
+                content: "1. يتم تقييم أداء الموظفين كل 6 أشهر.\n2. يتم استخدام نموذج تقييم موحد.\n3. يتم إجراء مقابلة تقييم مع المدير المباشر.",
+                version: 1,
+                isActive: true,
+                effectiveDate: "2024-01-01T00:00:00",
+                createdDate: "2024-01-01T00:00:00",
+                createdBy: "admin"
+            },
+            {
+                id: 5,
+                title: "سياسة الانضباط والعقوبات",
+                description: "سياسة معالجة المخالفات والعقوبات",
+                policyType: "DISCIPLINE",
+                content: "1. يتم تطبيق نظام تحذيرات تدريجي.\n2. التحذير الأول: تنبيه شفهي.\n3. التحذير الثاني: تنبيه كتابي.\n4. التحذير الثالث: إنذار نهائي.",
+                version: 1,
+                isActive: true,
+                effectiveDate: "2024-01-01T00:00:00",
+                createdDate: "2024-01-01T00:00:00",
+                createdBy: "admin"
+            }
+        ];
+
+        // تبديل بين الأقسام
+        function showSection(sectionName) {
+            // إخفاء جميع الأقسام
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.classList.remove('active'));
+
+            // إزالة الفئة النشطة من جميع الأزرار
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // إظهار القسم المطلوب
+            document.getElementById(sectionName).classList.add('active');
+
+            // إضافة الفئة النشطة للزر المطلوب
+            event.target.classList.add('active');
+
+            // تحميل البيانات حسب القسم
+            loadSectionData(sectionName);
+        }
+
+        // تحميل بيانات القسم
+        function loadSectionData(sectionName) {
+            let filteredPolicies = [];
+            
+            switch(sectionName) {
+                case 'overview':
+                    filteredPolicies = samplePolicies;
+                    break;
+                case 'leave':
+                    filteredPolicies = samplePolicies.filter(p => p.policyType === 'LEAVE');
+                    break;
+                case 'employment':
+                    filteredPolicies = samplePolicies.filter(p => p.policyType === 'EMPLOYMENT');
+                    break;
+                case 'salary':
+                    filteredPolicies = samplePolicies.filter(p => p.policyType === 'SALARY');
+                    break;
+                case 'performance':
+                    filteredPolicies = samplePolicies.filter(p => p.policyType === 'PERFORMANCE');
+                    break;
+                case 'discipline':
+                    filteredPolicies = samplePolicies.filter(p => p.policyType === 'DISCIPLINE');
+                    break;
+            }
+
+            renderPolicies(filteredPolicies, sectionName + 'PoliciesGrid');
+        }
+
+        // عرض السياسات
+        function renderPolicies(policies, gridId) {
+            const grid = document.getElementById(gridId);
+            grid.innerHTML = '';
+
+            policies.forEach(policy => {
+                const card = createPolicyCard(policy);
+                grid.appendChild(card);
+            });
+        }
+
+        // إنشاء بطاقة سياسة
+        function createPolicyCard(policy) {
+            const card = document.createElement('div');
+            card.className = 'policy-card';
+            
+            const typeLabels = {
+                'LEAVE': 'سياسات الإجازات',
+                'EMPLOYMENT': 'سياسات التوظيف',
+                'SALARY': 'سياسات الرواتب',
+                'PERFORMANCE': 'سياسات الأداء',
+                'DISCIPLINE': 'سياسات الانضباط'
+            };
+
+            card.innerHTML = `
+                <div class="policy-header">
+                    <div class="policy-title">${policy.title}</div>
+                    <div class="policy-type">${typeLabels[policy.policyType]}</div>
+                </div>
+                <div class="policy-description">${policy.description}</div>
+                <div class="policy-meta">
+                    <span>الإصدار: ${policy.version}</span>
+                    <span>الحالة: ${policy.isActive ? 'نشط' : 'غير نشط'}</span>
+                </div>
+                <div class="policy-actions">
+                    <button class="btn btn-primary" onclick="viewPolicy(${policy.id})">عرض</button>
+                    <button class="btn btn-warning" onclick="editPolicy(${policy.id})">تعديل</button>
+                    <button class="btn btn-success" onclick="togglePolicyStatus(${policy.id})">${policy.isActive ? 'إلغاء التفعيل' : 'تفعيل'}</button>
+                    <button class="btn btn-danger" onclick="deletePolicy(${policy.id})">حذف</button>
+                </div>
+            `;
+
+            return card;
+        }
+
+        // تحديث الإحصائيات
+        function updateStats() {
+            document.getElementById('totalPolicies').textContent = samplePolicies.length;
+            document.getElementById('activePolicies').textContent = samplePolicies.filter(p => p.isActive).length;
+            document.getElementById('leavePolicies').textContent = samplePolicies.filter(p => p.policyType === 'LEAVE').length;
+            document.getElementById('employmentPolicies').textContent = samplePolicies.filter(p => p.policyType === 'EMPLOYMENT').length;
+        }
+
+        // البحث في السياسات
+        function searchPolicies() {
+            const keyword = document.getElementById('searchInput').value.toLowerCase();
+            const filteredPolicies = samplePolicies.filter(policy => 
+                policy.title.toLowerCase().includes(keyword) ||
+                policy.description.toLowerCase().includes(keyword) ||
+                policy.content.toLowerCase().includes(keyword)
+            );
+            renderPolicies(filteredPolicies, 'allPoliciesGrid');
+        }
+
+        // إظهار modal إضافة سياسة
+        function showAddPolicyModal() {
+            document.getElementById('addPolicyModal').style.display = 'block';
+        }
+
+        // إغلاق modal
+        function closeModal() {
+            document.getElementById('addPolicyModal').style.display = 'none';
+            document.getElementById('addPolicyForm').reset();
+        }
+
+        // إضافة سياسة جديدة
+        function addPolicy(event) {
+            event.preventDefault();
+            
+            const newPolicy = {
+                id: samplePolicies.length + 1,
+                title: document.getElementById('policyTitle').value,
+                description: document.getElementById('policyDescription').value,
+                policyType: document.getElementById('policyType').value,
+                content: document.getElementById('policyContent').value,
+                version: 1,
+                isActive: true,
+                effectiveDate: document.getElementById('effectiveDate').value,
+                expiryDate: document.getElementById('expiryDate').value || null,
+                createdDate: new Date().toISOString(),
+                createdBy: document.getElementById('createdBy').value
+            };
+
+            samplePolicies.push(newPolicy);
+            updateStats();
+            loadSectionData('overview');
+            closeModal();
+            
+            alert('تم إضافة السياسة بنجاح!');
+        }
+
+        // عرض سياسة
+        function viewPolicy(id) {
+            const policy = samplePolicies.find(p => p.id === id);
+            if (policy) {
+                alert(`عرض السياسة: ${policy.title}\n\n${policy.content}`);
+            }
+        }
+
+        // تعديل سياسة
+        function editPolicy(id) {
+            alert('سيتم إضافة ميزة التعديل قريباً');
+        }
+
+        // تبديل حالة السياسة
+        function togglePolicyStatus(id) {
+            const policy = samplePolicies.find(p => p.id === id);
+            if (policy) {
+                policy.isActive = !policy.isActive;
+                updateStats();
+                loadSectionData('overview');
+                alert(`تم ${policy.isActive ? 'تفعيل' : 'إلغاء تفعيل'} السياسة بنجاح!`);
+            }
+        }
+
+        // حذف سياسة
+        function deletePolicy(id) {
+            if (confirm('هل أنت متأكد من حذف هذه السياسة؟')) {
+                const index = samplePolicies.findIndex(p => p.id === id);
+                if (index > -1) {
+                    samplePolicies.splice(index, 1);
+                    updateStats();
+                    loadSectionData('overview');
+                    alert('تم حذف السياسة بنجاح!');
+                }
+            }
+        }
+
+        // إعداد الأحداث
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStats();
+            loadSectionData('overview');
+            
+            // إعداد البحث
+            document.getElementById('searchInput').addEventListener('input', searchPolicies);
+            
+            // إعداد نموذج إضافة السياسة
+            document.getElementById('addPolicyForm').addEventListener('submit', addPolicy);
+            
+            // إغلاق modal عند النقر خارجه
+            window.onclick = function(event) {
+                const modal = document.getElementById('addPolicyModal');
+                if (event.target === modal) {
+                    closeModal();
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

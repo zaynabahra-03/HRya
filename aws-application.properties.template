@@ -1,0 +1,15 @@
+# Copy to src/main/resources/application.properties (do NOT commit secrets)
+aws.region=us-east-1
+# aws.accessKeyId=YOUR_ACCESS_KEY_ID
+# aws.secretAccessKey=YOUR_SECRET_ACCESS_KEY
+# aws.transcribe.outputBucket=your-output-bucket-name 
+
+# Google Cloud Text-to-Speech API Configuration
+google.tts.api.key=YOUR_GOOGLE_TTS_API_KEY_HERE
+
+# TTS Service Configuration
+tts.service.enabled=true
+tts.output.format=MP3
+tts.default.language=ar-XA
+tts.default.gender=FEMALE
+tts.temp.directory=temp/ 

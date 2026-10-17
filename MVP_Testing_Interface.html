@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRMS MVP - Voice Command Testing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .language-toggle {
+            background: #ecf0f1;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #bdc3c7;
+        }
+        
+        .language-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 0 10px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+        
+        .language-btn.active {
+            background: #e74c3c;
+            transform: scale(1.05);
+        }
+        
+        .language-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+        
+        .voice-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .voice-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            text-align: center;
+        }
+        
+        .voice-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .voice-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            width: 100%;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .voice-btn:hover {
+            background: #229954;
+            transform: translateY(-2px);
+        }
+        
+        .voice-btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .result-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            text-align: center;
+        }
+        
+        .result-display {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 200px;
+            font-size: 1.1em;
+            line-height: 1.6;
+            overflow-y: auto;
+        }
+        
+        .features-section {
+            grid-column: 1 / -1;
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .features-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            text-align: center;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+            text-align: center;
+        }
+        
+        .feature-card h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .feature-card p {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        
+        .status-bar {
+            background: #2c3e50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        
+        .status-success {
+            background: #27ae60;
+        }
+        
+        .status-error {
+            background: #e74c3c;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 HRMS MVP - Voice Command System</h1>
+            <p>Test the core voice-enabled HR management features</p>
+        </div>
+        
+        <div class="language-toggle">
+            <button class="language-btn active" onclick="setLanguage('english')">🇺🇸 English</button>
+            <button class="language-btn" onclick="setLanguage('arabic')">🇸🇦 العربية</button>
+        </div>
+        
+        <div class="main-content">
+            <div class="voice-section">
+                <h3>🎤 Voice Command Input</h3>
+                <textarea 
+                    class="voice-input" 
+                    id="voiceInput" 
+                    placeholder="Type or speak your HR request here..."
+                    oninput="processInput()"></textarea>
+                <button class="voice-btn" onclick="processVoiceCommand()">
+                    🎯 Process Voice Command
+                </button>
+                <button class="voice-btn" onclick="clearInput()">
+                    🗑️ Clear Input
+                </button>
+            </div>
+            
+            <div class="result-section">
+                <h3>📋 Command Results</h3>
+                <div class="result-display" id="resultDisplay">
+                    Welcome to HRMS MVP! Type or speak your HR request to get started.
+                    
+                    <br><br><strong>Try these examples:</strong><br>
+                    • "I need leave for tomorrow"<br>
+                    • "What's my salary?"<br>
+                    • "Show my attendance record"<br>
+                    • "Update my profile"<br>
+                    • "Company policies"
+                </div>
+            </div>
+            
+            <div class="features-section">
+                <h3>✨ MVP Core Features</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>🏖️ Leave Management</h4>
+                        <p>Request leave, check balance, view status</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>👤 Profile Updates</h4>
+                        <p>Update personal information via voice</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>💰 Payroll Queries</h4>
+                        <p>Check salary, benefits, deductions</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>⏰ Attendance Tracking</h4>
+                        <p>View attendance records and reports</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📜 Policy Information</h4>
+                        <p>Access company policies and guidelines</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🌐 Bilingual Support</h4>
+                        <p>Arabic and English voice commands</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="status-bar" id="statusBar">
+            🟢 MVP System Ready - Voice Commands Active
+        </div>
+    </div>
+
+    <script>
+        let currentLanguage = 'english';
+        let commandHistory = [];
+        
+        // Language switching
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Update button states
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update placeholders and text
+            if (lang === 'arabic') {
+                document.getElementById('voiceInput').placeholder = 'اكتب أو تحدث طلبك في الموارد البشرية هنا...';
+                document.getElementById('resultDisplay').innerHTML = 'مرحباً بك في نظام إدارة الموارد البشرية! اكتب أو تحدث طلبك للبدء.';
+                updateStatus('🟢 النظام جاهز - الأوامر الصوتية العربية نشطة');
+            } else {
+                document.getElementById('voiceInput').placeholder = 'Type or speak your HR request here...';
+                document.getElementById('resultDisplay').innerHTML = 'Welcome to HRMS MVP! Type or speak your HR request to get started.';
+                updateStatus('🟢 MVP System Ready - English Voice Commands Active');
+            }
+        }
+        
+        // Process voice command input
+        function processVoiceCommand() {
+            const input = document.getElementById('voiceInput').value.trim();
+            if (!input) {
+                updateStatus('⚠️ Please enter a voice command first', 'warning');
+                return;
+            }
+            
+            updateStatus('🔄 Processing voice command...', 'processing');
+            
+            // Simulate processing delay
+            setTimeout(() => {
+                const result = analyzeVoiceCommand(input);
+                displayResult(result);
+                updateStatus('✅ Voice command processed successfully', 'success');
+            }, 1000);
+        }
+        
+        // Analyze voice command intent
+        function analyzeVoiceCommand(input) {
+            const lowerInput = input.toLowerCase();
+            let result = {
+                intent: 'UNKNOWN',
+                confidence: 0,
+                response: '',
+                action: 'none'
+            };
+            
+            // Leave Management
+            if (lowerInput.includes('leave') || lowerInput.includes('إجازة') || lowerInput.includes('اجازة')) {
+                if (lowerInput.includes('request') || lowerInput.includes('need') || lowerInput.includes('طلب') || lowerInput.includes('أريد')) {
+                    result.intent = 'LEAVE_REQUEST';
+                    result.confidence = 0.95;
+                    result.response = currentLanguage === 'arabic' 
+                        ? 'تم فهم طلب الإجازة. متى تريد الإجازة؟'
+                        : 'Leave request understood. When do you need leave?';
+                    result.action = 'leave_request';
+                } else if (lowerInput.includes('balance') || lowerInput.includes('رصيد')) {
+                    result.intent = 'LEAVE_BALANCE';
+                    result.confidence = 0.90;
+                    result.response = currentLanguage === 'arabic'
+                        ? 'رصيد الإجازات الحالي: 15 يوم'
+                        : 'Current leave balance: 15 days';
+                    result.action = 'leave_balance';
+                }
+            }
+            
+            // Profile Management
+            else if (lowerInput.includes('profile') || lowerInput.includes('profile') || lowerInput.includes('الملف') || lowerInput.includes('البيانات')) {
+                result.intent = 'PROFILE_UPDATE';
+                result.confidence = 0.88;
+                result.response = currentLanguage === 'arabic'
+                    ? 'تحديث الملف الشخصي. ما الذي تريد تغييره؟'
+                    : 'Profile update. What would you like to change?';
+                result.action = 'profile_update';
+            }
+            
+            // Payroll Queries
+            else if (lowerInput.includes('salary') || lowerInput.includes('pay') || lowerInput.includes('راتب') || lowerInput.includes('راتبي')) {
+                result.intent = 'PAYROLL_QUERY';
+                result.confidence = 0.92;
+                result.response = currentLanguage === 'arabic'
+                    ? 'معلومات الراتب: الراتب الأساسي 5000 ريال، البدلات 800 ريال'
+                    : 'Salary information: Basic salary $5000, Allowances $800';
+                result.action = 'payroll_query';
+            }
+            
+            // Attendance Queries
+            else if (lowerInput.includes('attendance') || lowerInput.includes('حضور') || lowerInput.includes('سجل')) {
+                result.intent = 'ATTENDANCE_QUERY';
+                result.confidence = 0.89;
+                result.response = currentLanguage === 'arabic'
+                    ? 'سجل الحضور: هذا الشهر 22 يوم عمل، 2 أيام غياب'
+                    : 'Attendance record: This month 22 working days, 2 absences';
+                result.action = 'attendance_query';
+            }
+            
+            // Policy Queries
+            else if (lowerInput.includes('policy') || lowerInput.includes('policies') || lowerInput.includes('سياسة') || lowerInput.includes('سياسات')) {
+                result.intent = 'POLICY_QUERY';
+                result.confidence = 0.87;
+                result.response = currentLanguage === 'arabic'
+                    ? 'سياسات الشركة: سياسة الإجازات، سياسة الرواتب، سياسة الأداء'
+                    : 'Company policies: Leave policy, Salary policy, Performance policy';
+                result.action = 'policy_query';
+            }
+            
+            // Unknown intent
+            else {
+                result.intent = 'UNKNOWN';
+                result.confidence = 0.10;
+                result.response = currentLanguage === 'arabic'
+                    ? 'عذراً، لم أفهم طلبك. يرجى المحاولة مرة أخرى.'
+                    : 'Sorry, I didn\'t understand your request. Please try again.';
+            }
+            
+            return result;
+        }
+        
+        // Display command result
+        function displayResult(result) {
+            const resultDisplay = document.getElementById('resultDisplay');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            const resultHTML = `
+                <div style="border-bottom: 1px solid #ddd; padding-bottom: 15px; margin-bottom: 15px;">
+                    <strong>🎯 Intent:</strong> ${result.intent}<br>
+                    <strong>📊 Confidence:</strong> ${(result.confidence * 100).toFixed(1)}%<br>
+                    <strong>⏰ Time:</strong> ${timestamp}<br>
+                    <strong>🔧 Action:</strong> ${result.action}
+                </div>
+                <div style="font-size: 1.2em; line-height: 1.8;">
+                    <strong>💬 Response:</strong><br>
+                    ${result.response}
+                </div>
+            `;
+            
+            resultDisplay.innerHTML = resultHTML;
+            
+            // Add to command history
+            commandHistory.push({
+                timestamp: timestamp,
+                intent: result.intent,
+                confidence: result.confidence,
+                action: result.action
+            });
+        }
+        
+        // Process input as user types
+        function processInput() {
+            const input = document.getElementById('voiceInput').value;
+            if (input.length > 0) {
+                updateStatus('📝 Input detected - Ready to process', 'ready');
+            } else {
+                updateStatus('🟢 Ready for voice commands', 'ready');
+            }
+        }
+        
+        // Clear input
+        function clearInput() {
+            document.getElementById('voiceInput').value = '';
+            document.getElementById('resultDisplay').innerHTML = currentLanguage === 'arabic' 
+                ? 'تم مسح المدخلات. جاهز لأوامر جديدة.'
+                : 'Input cleared. Ready for new commands.';
+            updateStatus('🟢 Input cleared - Ready for new commands', 'ready');
+        }
+        
+        // Update status bar
+        function updateStatus(message, type = 'info') {
+            const statusBar = document.getElementById('statusBar');
+            statusBar.textContent = message;
+            
+            // Update status bar color based on type
+            statusBar.className = 'status-bar';
+            if (type === 'success') {
+                statusBar.classList.add('status-success');
+            } else if (type === 'error') {
+                statusBar.classList.add('status-error');
+            }
+        }
+        
+        // Initialize the interface
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStatus('🟢 MVP System Ready - Voice Commands Active');
+            
+            // Add some sample commands for demonstration
+            setTimeout(() => {
+                updateStatus('💡 Try saying: "I need leave" or "What\'s my salary?"', 'info');
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

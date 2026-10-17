@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار نظام تحويل النص إلى صوت - HRya</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        textarea {
+            height: 120px;
+            resize: vertical;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-right: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        }
+        
+        .audio-player {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .examples {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .examples h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .example-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            margin: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .example-btn:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎤 نظام تحويل النص إلى صوت</h1>
+            <p>HRya - اختبار Google Cloud TTS</p>
+        </div>
+        
+        <div class="content">
+            <form id="ttsForm">
+                <div class="form-group">
+                    <label for="text">النص المراد تحويله إلى صوت:</label>
+                    <textarea id="text" name="text" placeholder="اكتب النص هنا..." required>مرحباً من HRya! كيف يمكنني مساعدتك اليوم؟</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="language">اللغة:</label>
+                    <select id="language" name="language">
+                        <option value="ar-XA">العربية (ar-XA)</option>
+                        <option value="en-US">الإنجليزية (en-US)</option>
+                        <option value="fr-FR">الفرنسية (fr-FR)</option>
+                        <option value="de-DE">الألمانية (de-DE)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="gender">جنس الصوت:</label>
+                    <select id="gender" name="gender">
+                        <option value="FEMALE">أنثوي</option>
+                        <option value="MALE">ذكري</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn">🎵 تحويل إلى صوت</button>
+                    <button type="button" class="btn btn-secondary" onclick="testTTS()">🧪 اختبار النظام</button>
+                </div>
+            </form>
+            
+            <div class="examples">
+                <h3>📝 أمثلة سريعة:</h3>
+                <button class="example-btn" onclick="setExample('مرحباً! كيف حالك اليوم؟')">تحية بسيطة</button>
+                <button class="example-btn" onclick="setExample('أهلاً وسهلاً بك في نظام إدارة الموارد البشرية')">ترحيب رسمي</button>
+                <button class="example-btn" onclick="setExample('تم قبول طلب إجازتك بنجاح')">رسالة تأكيد</button>
+                <button class="example-btn" onclick="setExample('يرجى مراجعة المدير للموافقة على طلبك')">رسالة إرشادية</button>
+            </div>
+            
+            <div id="status" class="status" style="display: none;"></div>
+            
+            <div id="audioPlayer" class="audio-player" style="display: none;">
+                <h3>🎧 ملف الصوت المُنشأ:</h3>
+                <audio id="audio" controls style="width: 100%; max-width: 400px;">
+                    متصفحك لا يدعم تشغيل الصوت.
+                </audio>
+                <p style="margin-top: 10px; color: #666;">
+                    <strong>ملاحظة:</strong> يمكنك تحميل الملف أو تشغيله مباشرة
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('ttsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            convertTextToSpeech();
+        });
+        
+        function convertTextToSpeech() {
+            const text = document.getElementById('text').value;
+            const language = document.getElementById('language').value;
+            const gender = document.getElementById('gender').value;
+            
+            if (!text.trim()) {
+                showStatus('يرجى إدخال نص للتحويل', 'error');
+                return;
+            }
+            
+            showStatus('جاري تحويل النص إلى صوت...', 'info');
+            
+            const requestData = {
+                text: text,
+                languageCode: language,
+                gender: gender
+            };
+            
+            fetch('/api/tts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.blob();
+                } else {
+                    throw new Error('خطأ في الاستجابة');
+                }
+            })
+            .then(blob => {
+                const audioUrl = URL.createObjectURL(blob);
+                const audio = document.getElementById('audio');
+                audio.src = audioUrl;
+                
+                document.getElementById('audioPlayer').style.display = 'block';
+                showStatus('تم تحويل النص إلى صوت بنجاح! 🎉', 'success');
+            })
+            .catch(error => {
+                console.error('خطأ:', error);
+                showStatus('حدث خطأ أثناء تحويل النص إلى صوت: ' + error.message, 'error');
+            });
+        }
+        
+        function testTTS() {
+            showStatus('جاري اختبار النظام...', 'info');
+            
+            fetch('/api/tts/test')
+            .then(response => response.text())
+            .then(result => {
+                showStatus('نتيجة الاختبار: ' + result, 'success');
+            })
+            .catch(error => {
+                showStatus('خطأ في اختبار النظام: ' + error.message, 'error');
+            });
+        }
+        
+        function setExample(text) {
+            document.getElementById('text').value = text;
+        }
+        
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = 'status ' + type;
+            statusDiv.style.display = 'block';
+            
+            // إخفاء الرسالة بعد 5 ثواني
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 5000);
+        }
+        
+        // تعيين النص الافتراضي عند تحميل الصفحة
+        window.addEventListener('load', function() {
+            document.getElementById('text').value = 'مرحباً من HRya! كيف يمكنني مساعدتك اليوم؟';
+        });
+    </script>
+</body>
+</html>
